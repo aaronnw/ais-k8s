@@ -11,7 +11,7 @@ env:
 
 jobs:
   release:
-    runs-on: ubuntu-22.04
+    runs-on: self-hosted
     steps:
     
     - name: Checkout Repo
@@ -19,17 +19,17 @@ jobs:
     - uses: actions/setup-go@v4
       with:
         go-version: '>=1.21.0'
-    - name: Login to DockerHub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    # - name: Login to DockerHub
+    #   uses: docker/login-action@v2
+    #   with:
+    #     username: ${{ secrets.DOCKERHUB_USERNAME }}
+    #     password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: make aisoperator image
-      run: |
-        pushd $GITHUB_WORKSPACE/operator
-        IMG="${{ env.AISOPERATOR_IMAGE }}:${{ env.VERSION }}" make docker-build docker-push
-        popd
+    # - name: make aisoperator image
+    #   run: |
+    #     pushd $GITHUB_WORKSPACE/operator
+    #     IMG="${{ env.AISOPERATOR_IMAGE }}:${{ env.VERSION }}" make docker-build docker-push
+    #     popd
   
     - name: make operator yaml file
       run: |
