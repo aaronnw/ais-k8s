@@ -1,13 +1,17 @@
 name: Publish ais-k8s release 
 
 on:
-  push:
-    tags:
-      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'version for operator test release'
+        required: true
+        type: string
+        default: 'v0.97'
 
 env:
   AISOPERATOR_IMAGE: 'aistorage/ais-operator'
-  VERSION: ${{ github.ref_name }}
+  VERSION: ${{ inputs.version }}
 
 jobs:
   release:
