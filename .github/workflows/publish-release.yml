@@ -1,4 +1,4 @@
-name: Publish ais-k8s release 
+name: Publish ais-k8s release
   on:
     push:
       tags:
