@@ -1,7 +1,8 @@
 name: Publish ais-k8s release 
-  push:
-    tags:
-      - 'v*'
+  on:
+    push:
+      tags:
+        - 'v*'
 
 env:
   AISOPERATOR_IMAGE: 'aistorage/ais-operator'
