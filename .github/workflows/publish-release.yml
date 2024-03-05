@@ -1,37 +1,36 @@
 name: Publish ais-k8s release 
 
 on:
-  push:
-    tags:
-      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'version for operator test release'
+        required: true
+        type: string
+        default: 'v1.0.0'
 
 env:
   AISOPERATOR_IMAGE: 'aistorage/ais-operator'
-  VERSION: ${{ github.ref_name }}
+  VERSION: ${{ inputs.version }}
 
 jobs:
   release:
-    runs-on: ubuntu-22.04
+    runs-on: self-hosted
     steps:
     
     - name: Checkout Repo
       uses: actions/checkout@v2
     - uses: actions/setup-go@v4
       with:
-        go-version: '1.22.x'
-    - name: Login to DockerHub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
+        go-version: '>=1.22.0'
 
     - name: Make aisoperator image
       run: |
         pushd $GITHUB_WORKSPACE/operator
-        IMG="${{ env.AISOPERATOR_IMAGE }}:${{ env.VERSION }}" make docker-build docker-push
+        IMG="${{ env.AISOPERATOR_IMAGE }}:${{ env.VERSION }}" make docker-build
         popd
   
-    - name: Make operator yaml file and helm chart
+    - name: Make operator manifest and helm chart
       run: |
         pushd $GITHUB_WORKSPACE/operator
         VERSION="${{ env.VERSION }}" IMG="${{ env.AISOPERATOR_IMAGE }}:${{ env.VERSION }}" make helm-chart
