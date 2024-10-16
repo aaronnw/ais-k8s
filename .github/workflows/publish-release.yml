@@ -23,19 +23,6 @@ jobs:
     - uses: actions/setup-go@v4
       with:
         go-version: '1.22.x'
-
-    - name: Login to DockerHub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-    - name: Make aisoperator image
-      run: |
-        pushd $GITHUB_WORKSPACE/operator
-        IMG="${{ env.AISOPERATOR_IMAGE }}:${{ env.VERSION }}" make docker-build docker-push
-        IMG="${{ env.AISOPERATOR_IMAGE }}:latest" make docker-build docker-push
-        popd
   
     - name: Make operator yaml file and helm chart
       run: |
