@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  ais-operator:
+  - apiVersion: v2
+    appVersion: 0.9.9
+    created: "2024-10-17T16:53:12.152309-05:00"
+    description: A Helm chart for Kubernetes
+    digest: 1b9eff64871359e44008870fe4f539f924fc6050ea555d25f7660a50359b18a6
+    name: ais-operator
+    type: application
+    urls:
+    - https://NVIDIA.github.io/ais-k8s/charts/ais-operator-0.9.9.tgz
+    version: 0.9.9
+generated: "2024-10-17T16:53:12.151095-05:00"
