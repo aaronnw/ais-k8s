@@ -1,13 +1,31 @@
-name: Publish ais-k8s release 
+name: Publish Operator Release and Helm Charts
 
 on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., v1.0.0)'
+        required: true
+        type: string
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 env:
   AISOPERATOR_IMAGE: 'aistorage/ais-operator'
-  VERSION: ${{ github.ref_name }}
+  VERSION: ${{ github.event_name == 'push' && github.ref_name || github.event.inputs.version }}
 
 jobs:
   release:
@@ -32,13 +50,37 @@ jobs:
         IMG="${{ env.AISOPERATOR_IMAGE }}:latest" make docker-build docker-push
         popd
   
-    - name: Make operator yaml file and helm chart
+    - name: Make operator yaml file
       run: |
         pushd $GITHUB_WORKSPACE/operator
-        VERSION="${{ env.VERSION }}" IMG="${{ env.AISOPERATOR_IMAGE }}:${{ env.VERSION }}" make build-installer-helm
+        VERSION="${{ env.VERSION }}" IMG="${{ env.AISOPERATOR_IMAGE }}:${{ env.VERSION }}" make build-installer
         popd
 
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
         files: operator/dist/*
+        tag_name: ${{ env.VERSION }}
+
+  deploy-pages:
+    needs: release
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'charts/'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
