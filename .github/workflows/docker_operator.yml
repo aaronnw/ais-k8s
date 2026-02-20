@@ -19,7 +19,7 @@ on:
         required: true
         type: string
 env:
-  IMAGE_REPO: 'aistorage/ais-operator'
+  IMAGE_REPO: 'aaronnw/ais-operator'
   IMAGE_TAG: ${{ github.event_name == 'push' && 'dev' || inputs.image_tag }}
 
 jobs:
